@@ -1,35 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
 
-function App() {
-  const [count, setCount] = useState(0)
+const LibraryOccupancyTracker: React.FC = () => {
+  const [selectedFloor, setSelectedFloor] = useState<number | null>(null);
+
+  // Create an object to store the occupancy information for each floor
+  const [occupancyData, setOccupancyData] = useState<{ [key: number]: number }>({
+    1: 0, // Initialize occupancy for each floor to 0
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0,
+    8: 0,
+  });
+
+  const handleFloorClick = (floor: number) => {
+    if (selectedFloor === floor) {
+      // If the same floor is clicked again, unselect it and decrease its occupancy
+      setSelectedFloor(null);
+      setOccupancyData({
+        ...occupancyData,
+        [floor]: occupancyData[floor] - 1,
+      });
+    } else {
+      // Otherwise, update the occupancy for the previously selected floor and set the new floor
+      setSelectedFloor(floor);
+      setOccupancyData({
+        ...occupancyData,
+        [selectedFloor!]: occupancyData[selectedFloor!] - 1, // Decrease occupancy for the previously selected floor
+        [floor]: occupancyData[floor] + 1, // Increase occupancy for the new floor
+      });
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div>
+      <h1>Welcome, Please Select What Floor of Davis You'll Be At</h1>
+      <p>Selected Floor: {selectedFloor === null ? 'None' : `${selectedFloor} floor`}</p>
 
-export default App
+      <div>
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((floor) => (
+          <div key={floor}>
+            <button onClick={() => handleFloorClick(floor)} className={selectedFloor === floor ? 'selected' : ''}>
+              {floor} Floor
+            </button>
+            <span>Occupancy Percentage: {(occupancyData[floor] / 50 * 100).toFixed(2)}%</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default LibraryOccupancyTracker;
