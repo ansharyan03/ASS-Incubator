@@ -22,33 +22,34 @@ def init():
     except SQLError as e:
         return {"errormsg": e.msg}
     
-@app.route("/checkin/<string:user>/<int:floor>", methods=["GET", "POST"])
-def checkin(user, floor):
+@app.route("/checkin", methods=["GET", "POST"])
+def checkin():
     if request.method == "GET":
-        try:
-            davis.checkin(user, floor, "")
-        except IntegrityError as e:
-            return {"errormsg": f"user already checked in: {e.msg}"}
+        # try:
+        #     davis.checkin(user, floor, "")
+        # except IntegrityError as e:
+        #     return {"errormsg": f"user already checked in: {e.msg}"}
         return "hello from checkin"
 
     if request.method == "POST":
         data = request.get_json()
         try:
-            davis.checkin(data["user"], data["floor"], data["note"])
+            davis.checkin(data["user"], data["floor"], data["noteWritten"])
+            return data
         except KeyError as e:
             return {"errormsg": "user data not found"}
         except SQLError as e:
             return {"errormsg": e.msg}
         return "successfully checked in"
 
-@app.route("/checkout/<string:user>", methods=["GET", "POST"])
-def checkout(user):
-    if request.method == "GET":
-        try:
-            davis.checkout(user)
-        except SQLError as e:
-            return {"errormsg": e.msg}
-        return "hello from checkout"
+@app.route("/checkout", methods=["GET", "POST"])
+def checkout():
+    # if request.method == "GET":
+    #     try:
+    #         davis.checkout(user)
+    #     except SQLError as e:
+    #         return {"errormsg": e.msg}
+    #     return "hello from checkout"
 
     if request.method == "POST":
         data = request.get_json()

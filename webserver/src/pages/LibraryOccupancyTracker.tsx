@@ -26,27 +26,31 @@ const LibraryOccupancyTracker: React.FC<LibraryProps> = ({user}) => {
   const handleFloorClick = (floor: number) => {
     if (selectedFloor === floor) {
       setSelectedFloor(null);
-      setOccupancyData(prevOccupancyData => {
-        const newData = [...prevOccupancyData];
-        newData[floor - 1] = Math.max(newData[floor - 1] - 1, 0);
-        return newData;
-      });
+      // setOccupancyData(prevOccupancyData => {
+      //   const newData = [...prevOccupancyData];
+      //   newData[floor - 1] = Math.max(newData[floor - 1] - 1, 0);
+      //   return newData;
+      // });
     } else {
       setSelectedFloor(floor);
-      setOccupancyData(prevOccupancyData => {
-        const newData = [...prevOccupancyData];
-        newData[floor - 1] += 1;
-        if (selectedFloor !== null) {
-          newData[selectedFloor - 1] = Math.max(newData[selectedFloor - 1] - 1, 0);
-        }
-        return newData;
-      });
+      console.log(floor);
+      checkIn(username, floor, note);
+      // setOccupancyData(prevOccupancyData => {
+      //   const newData = [...prevOccupancyData];
+      //   newData[floor - 1] += 1;
+      //   if (selectedFloor !== null) {
+      //     newData[selectedFloor - 1] = Math.max(newData[selectedFloor - 1] - 1, 0);
+      //   }
+      //   return newData;
+      // });
     }
   };
 
-  const checkIn = async (user: string, floor: number, note: string) => {
-    data: Object = {"user": user, "floor": floor, "note": note};
-    const response = await fetch("http://localhost:8000/checkin", )
+  const checkIn = async (userName: string, floorNumber: number | null, noteWritten: string) => {
+    const checkInData = {user: userName, floor: floorNumber, noteWritten: note};
+    const response = await fetch("http://localhost:8000/checkin", {method: "POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify(checkInData)});
+    const msg = await response.json();
+    console.log("response from api: ", msg);
   }
 
   return (
