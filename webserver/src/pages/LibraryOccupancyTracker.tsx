@@ -52,8 +52,21 @@ const LibraryOccupancyTracker: React.FC<LibraryProps> = ({user}) => {
     const msg = await response.json();
     console.log("response from api: ", msg);
   }
-
-  return (
+  const checkOut = async (userName: string) => {
+    const checkOutData = {user: userName}
+    const response= await fetch("http://localhost:8000/checkout", {method: "POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify(checkOutData)});
+    const msg = await response.json();
+    console.log("response from api: ", msg);
+    };
+    const getData = async () => {
+      const response = await fetch("http://localhost:8000/view", {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json', 
+        }})
+    };
+  
+    return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
       <h1>Welcome, Please Select What Floor of Davis You'll Be At</h1>
       <p>Selected Floor: {selectedFloor === null ? 'None' : `${selectedFloor} floor`}</p>
