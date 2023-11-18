@@ -72,3 +72,17 @@ class DavisDB(DBBase):
         self.cnx.commit()
         self.cnx.close()
         return (len(users[0])-len(users[1]) == 1)
+
+    def view(self):
+        self.cnx = self.connect()
+        all_users = []
+        if(type(self.cnx) == str):
+            raise mysql.connector.Error(self.cnx)
+        with self.cnx.cursor() as cursor:
+            cursor.execute("SELECT * FROM users.checkedIn;")
+            users = cursor.fetchall()
+            for user in users:
+                all_users.append({"user": user[0], "floor": user[1], "note": user[2]})
+        self.cnx.commit()
+        self.cnx.close()
+        return all_users
