@@ -56,10 +56,10 @@ def checkout():
 @app.route("/view", methods=["GET"])
 def view():
     try:
-        users = davis.view()
+        users = davis.floor_count()
         return jsonify(users)
     except BaseException as e:
-        return {"errormsg": e.msg}
+        return {"errormsg": e}
 
 if __name__ == "__main__":
     app.run("0.0.0.0", port=8000, debug=True)

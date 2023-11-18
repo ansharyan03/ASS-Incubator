@@ -55,49 +55,49 @@ class DavisDB(DBBase):
     
     # check in method for Davis user
     def checkin(self, user: str, floor: int, note: str = ""):
-        self.cnx = self.connect()
-        if(type(self.cnx) == str):
-            raise mysql.connector.Error(self.cnx)
-        with self.cnx.cursor() as cursor:
+        cnx = self.connect()
+        if(type(cnx) == str):
+            raise mysql.connector.Error(cnx)
+        with cnx.cursor() as cursor:
             cursor.execute(check_in, (user, str(datetime.datetime.now()), floor, note))
-        self.cnx.commit()
-        self.cnx.close()
+        cnx.commit()
+        cnx.close()
     
     # check out for Davis user
     def checkout(self, user: str):
-        self.cnx = self.connect()
+        cnx = self.connect()
         users = []
-        if(type(self.cnx) == str):
-            raise mysql.connector.Error(self.cnx)
-        with self.cnx.cursor() as cursor:
+        if(type(cnx) == str):
+            raise mysql.connector.Error(cnx)
+        with cnx.cursor() as cursor:
             cursor.execute("SELECT * FROM users.checkedIn;")
             users.append(cursor.fetchall())
             cursor.execute(drop_user, (user,))
             cursor.execute("SELECT * FROM users.checkedIn")
             users.append(cursor.fetchall())
-        self.cnx.commit()
-        self.cnx.close()
+        cnx.commit()
+        cnx.close()
         return (len(users[0])-len(users[1]) == 1)
 
     # show list of users currently in Davis
     def view(self):
-        self.cnx = self.connect()
+        cnx = self.connect()
         all_users = []
-        if(type(self.cnx) == str):
-            raise mysql.connector.Error(self.cnx)
-        with self.cnx.cursor() as cursor:
+        if(type(cnx) == str):
+            raise mysql.connector.Error(cnx)
+        with cnx.cursor() as cursor:
             cursor.execute("SELECT * FROM users.checkedIn;")
             users = cursor.fetchall()
             for user in users:
-                all_users.append({"user": user[0], "floor": user[1], "note": user[2]})
-        self.cnx.commit()
-        self.cnx.close()
+                all_users.append({"user": user[0], "floor": user[2], "note": user[3]})
+        cnx.commit()
+        cnx.close()
         return all_users
     
     # show count of users on each floor
     def floor_count(self):
-        floors = {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0}
+        floors = [0 for i in range(8)]
         users = self.view()
         for user in users:
-            floors[str(user["floor"])] += 1
+            floors[user["floor"]-1] += 1
         return floors

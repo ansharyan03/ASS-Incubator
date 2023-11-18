@@ -12,20 +12,12 @@ const LibraryOccupancyTracker: React.FC<LibraryProps> = ({user}) => {
   const [selectedFloor, setSelectedFloor] = useState<number | null>(null);
   let navigate = useNavigate();
   // Create an object to store the occupancy information for each floor
-  const [occupancyData, setOccupancyData] = useState<{ [key: number]: number }>({
-    1: 0, // Initialize occupancy for each floor to 0
-    2: 0,
-    3: 0,
-    4: 0,
-    5: 0,
-    6: 0,
-    7: 0,
-    8: 0,
-  });
+  const [occupancyData, setOccupancyData] = useState<Array<number>>([0, 0, 0, 0, 0, 0, 0, 0]);
 
   const handleFloorClick = (floor: number) => {
     if (selectedFloor === floor) {
       setSelectedFloor(null);
+      checkOut(username);
       // setOccupancyData(prevOccupancyData => {
       //   const newData = [...prevOccupancyData];
       //   newData[floor - 1] = Math.max(newData[floor - 1] - 1, 0);
@@ -44,6 +36,7 @@ const LibraryOccupancyTracker: React.FC<LibraryProps> = ({user}) => {
       //   return newData;
       // });
     }
+    getData();
   };
 
   const checkIn = async (userName: string, floorNumber: number | null, noteWritten: string) => {
@@ -63,9 +56,15 @@ const LibraryOccupancyTracker: React.FC<LibraryProps> = ({user}) => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json', 
-        }})
+        }});
+        const data = await response.json();
+        // const occupancy = [...occupancyData];
+        // for(let i = 0; i < data.length; i++){
+        //   occupancy[i] = occupancy[i]+1;
+        //   // Update the state with the new array
+        // }
+        setOccupancyData(data);
     };
-  
     return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
       <h1>Welcome, Please Select What Floor of Davis You'll Be At</h1>

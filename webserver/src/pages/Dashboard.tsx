@@ -1,4 +1,4 @@
-import {BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import React, { useState } from 'react';
 
 const Dashboard: React.FC = () => {
     const [occupancyData, setOccupancyData] = useState<{ [key: number]: number }>({
@@ -11,7 +11,7 @@ const Dashboard: React.FC = () => {
         7: 0,
         8: 0,
       });
-      
+
   return (
     <div>
         <div>
