@@ -4,6 +4,7 @@ import os
 import datetime
 from random import random as rand
 
+# database class
 class DBBase:
     def __init__(self, host="localhost", user="root", password=""):
         self.host = host
@@ -13,6 +14,7 @@ class DBBase:
 
     def connect(self):
         try:
+            # connect to db
             cnx = mysql.connector.connect(
                 host=self.host, user=self.user, password=self.password
             )
@@ -24,6 +26,7 @@ class DBBase:
             print(cnx)
             return ""
 
+# abbreviated db commands
 drop_db = "DROP DATABASE IF EXISTS users"
 create_db = "CREATE DATABASE users"
 create_table = """CREATE TABLE `users`.`checkedIn` (
@@ -37,6 +40,7 @@ check_in = "INSERT INTO users.checkedIn VALUES (%s, %s, %s, %s)"
 find_user = "SELECT * FROM users.checkedIn WHERE user=%s"
 drop_user = "DELETE FROM users.checkedIn WHERE user=%s"
 
+# Davis db class
 class DavisDB(DBBase):
     def init(self):
         self.cnx = self.connect()
@@ -49,6 +53,7 @@ class DavisDB(DBBase):
         self.cnx.commit()
         self.cnx.close()
     
+    # check in method for Davis user
     def checkin(self, user: str, floor: int, note: str = ""):
         self.cnx = self.connect()
         if(type(self.cnx) == str):
@@ -58,6 +63,7 @@ class DavisDB(DBBase):
         self.cnx.commit()
         self.cnx.close()
     
+    # check out for Davis user
     def checkout(self, user: str):
         self.cnx = self.connect()
         users = []
@@ -72,3 +78,18 @@ class DavisDB(DBBase):
         self.cnx.commit()
         self.cnx.close()
         return (len(users[0])-len(users[1]) == 1)
+
+    # show list of users currently in Davis
+    def view(self):
+        self.cnx = self.connect()
+        all_users = []
+        if(type(self.cnx) == str):
+            raise mysql.connector.Error(self.cnx)
+        with self.cnx.cursor() as cursor:
+            cursor.execute("SELECT * FROM users.checkedIn;")
+            users = cursor.fetchall()
+            for user in users:
+                all_users.append({"user": user[0], "floor": user[1], "note": user[2]})
+        self.cnx.commit()
+        self.cnx.close()
+        return all_users

@@ -25,10 +25,6 @@ def init():
 @app.route("/checkin", methods=["GET", "POST"])
 def checkin():
     if request.method == "GET":
-        # try:
-        #     davis.checkin(user, floor, "")
-        # except IntegrityError as e:
-        #     return {"errormsg": f"user already checked in: {e.msg}"}
         return "hello from checkin"
 
     if request.method == "POST":
@@ -44,13 +40,6 @@ def checkin():
 
 @app.route("/checkout", methods=["GET", "POST"])
 def checkout():
-    # if request.method == "GET":
-    #     try:
-    #         davis.checkout(user)
-    #     except SQLError as e:
-    #         return {"errormsg": e.msg}
-    #     return "hello from checkout"
-
     if request.method == "POST":
         data = request.get_json()
         success = False
@@ -64,7 +53,13 @@ def checkout():
             return {"msg": "user dropped"}
         return {"errormsg": "user could not be dropped. try again."}
 
-    
+@app.route("/view", methods=["GET"])
+def view():
+    try:
+        users = davis.view()
+        return jsonify(users)
+    except BaseException as e:
+        return {"errormsg": e.msg}
 
 if __name__ == "__main__":
     app.run("0.0.0.0", port=8000, debug=True)
