@@ -1,0 +1,29 @@
+version: "4.19"
+
+services:
+  sql:
+    container_name: sql
+    image: ansharyan03/mybrary:db
+    build: ./db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=ASS42069
+      - ACCEPT_EULA=Y
+
+  api:
+    container_name: api
+    image: ansharyan03/mybrary:api
+    build: ./api
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=sql
+      - DB_PASS=ASS42069
+
+  web:
+    container_name: web
+    image: ansharyan03/mybrary:web
+    build: ./webserver
+    ports:
+      - "80:80"
