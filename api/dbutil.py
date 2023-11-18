@@ -93,3 +93,11 @@ class DavisDB(DBBase):
         self.cnx.commit()
         self.cnx.close()
         return all_users
+    
+    # show count of users on each floor
+    def floor_count(self):
+        floors = {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0}
+        users = self.view()
+        for user in users:
+            floors[str(user["floor"])] += 1
+        return floors
