@@ -3,7 +3,7 @@ import LibraryOccupancyTracker from './pages/LibraryOccupancyTracker.tsx'
 import Dashboard from './pages/Dashboard.tsx'
 
 import './App.css'
-import {BrowserRouter, Routes, Route, Link} from "react-router-dom";
+import {BrowserRouter, Routes, Route} from "react-router-dom";
 
 function App() {
   return (

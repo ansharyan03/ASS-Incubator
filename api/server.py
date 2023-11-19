@@ -30,7 +30,7 @@ def checkin():
     if request.method == "POST":
         data = request.get_json()
         try:
-            davis.checkin(data["user"], data["floor"], data["noteWritten"])
+            davis.checkin(data["user"], data["floor"], data["note"])
             return data
         except KeyError as e:
             return {"errormsg": "user data not found"}

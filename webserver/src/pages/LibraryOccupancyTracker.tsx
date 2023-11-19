@@ -1,16 +1,10 @@
 import React, { useState } from 'react';
-import {redirect, useNavigate} from 'react-router-dom'
 
-interface LibraryProps{
-  user: string;
-}
-
-const LibraryOccupancyTracker: React.FC<LibraryProps> = ({user}) => {
+const LibraryOccupancyTracker: React.FC = () => {
 
   const [username, setUsername] = useState<string>('');
   const [note, setNote] = useState<string>('');
   const [selectedFloor, setSelectedFloor] = useState<number | null>(null);
-  let navigate = useNavigate();
   // Create an object to store the occupancy information for each floor
   const [occupancyData, setOccupancyData] = useState<Array<number>>([0, 0, 0, 0, 0, 0, 0, 0]);
 
@@ -40,7 +34,7 @@ const LibraryOccupancyTracker: React.FC<LibraryProps> = ({user}) => {
   };
 
   const checkIn = async (userName: string, floorNumber: number | null, noteWritten: string) => {
-    const checkInData = {user: userName, floor: floorNumber, noteWritten: note};
+    const checkInData = {user: userName, floor: floorNumber, note: noteWritten};
     const response = await fetch("http://localhost:8000/checkin", {method: "POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify(checkInData)});
     const msg = await response.json();
     console.log("response from api: ", msg);
