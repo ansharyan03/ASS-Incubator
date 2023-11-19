@@ -6,5 +6,5 @@ COPY requirements.txt requirements.txt
 ADD ./*.py ./
 RUN pip install -r requirements.txt
 EXPOSE 8000
-CMD ["gunicorn", "--capture-output", "--bind", "0.0.0.0:8000", "wsgi:app"]
+CMD ["gunicorn", "--capture-output", "--bind", "0.0.0.0:8000", "server:app"]
 # gunicorn --capture-output --bind 0.0.0.0:8000 wsgi:app

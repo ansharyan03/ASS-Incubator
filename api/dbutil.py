@@ -96,7 +96,7 @@ class DavisDB(DBBase):
     
     # show count of users on each floor
     def floor_count(self):
-        floors = [0 for i in range(8)]
+        floors = [0, 0, 0, 0, 0, 0, 0, 0]
         users = self.view()
         for user in users:
             floors[user["floor"]-1] += 1

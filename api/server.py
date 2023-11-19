@@ -12,7 +12,7 @@ from os import environ as env
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-davis = DB(password="ASS42069")
+davis = DB(host='sql', password="ASS42069")
 
 @app.route("/init", methods=["GET"])
 def init():
@@ -57,7 +57,7 @@ def checkout():
 def view():
     try:
         users = davis.floor_count()
-        return jsonify(users)
+        return {"counts": users}
     except BaseException as e:
         return {"errormsg": e}
 
