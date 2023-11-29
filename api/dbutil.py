@@ -101,3 +101,18 @@ class DavisDB(DBBase):
         for user in users:
             floors[user["floor"]-1] += 1
         return floors
+    
+    def floor_view(self, floor: int):
+        cnx = self.connect()
+        all_users = []
+        if(type(cnx) == str):
+            raise mysql.connector.Error(cnx)
+        with cnx.cursor() as cursor:
+            cursor.execute(f"SELECT * FROM users.checkedIn WHERE floor={floor}")
+            users = cursor.fetchall()
+            for user in users:
+                all_users.append({"user": user[0], "floor": user[2], "note": user[3]})
+        cnx.commit()
+        cnx.close()
+        print(users)
+        return all_users
