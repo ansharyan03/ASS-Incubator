@@ -61,5 +61,13 @@ def view():
     except BaseException as e:
         return {"errormsg": e}
 
+@app.route("/view/floor/<int:floor>")
+def floorview(floor: int):
+    try:
+        users = davis.floor_view(floor)
+        return users
+    except BaseException as e:
+        return {"errormsg": e}
+
 if __name__ == "__main__":
     app.run("0.0.0.0", port=8000, debug=True)
