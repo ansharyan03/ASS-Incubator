@@ -59,7 +59,7 @@ def checkout():
 def view():
     try:
         users = davis.floor_count()
-        return users
+        return {"counts": users}
     except BaseException as e:
         return {"errormsg": davis.floor_count()}
 
