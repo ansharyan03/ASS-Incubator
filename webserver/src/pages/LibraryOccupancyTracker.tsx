@@ -10,22 +10,30 @@ const LibraryOccupancyTracker: React.FC = () => {
   const [occupancyData, setOccupancyData] = useState<Array<number>>([0, 0, 0, 0, 0, 0, 0, 0]);
   useEffect(() => {
     getData();
+    const textBox = document.getElementById("note");
+    const userBox = document.getElementById("user");
+    textBox?.setAttribute("wrap", "off");
+    userBox?.setAttribute("wrap", "off");
   });
-  const handleFloorClick = (floor: number) => {
+  const handleFloorClick = async (floor: number) => {
     if (selectedFloor === floor) {
       setSelectedFloor(null);
       checkOut(lastUser);
-      // setOccupancyData(prevOccupancyData => {
-      //   const newData = [...prevOccupancyData];
-      //   newData[floor - 1] = Math.max(newData[floor - 1] - 1, 0);
-      //   return newData;
-      // });
     }
     else if (selectedFloor === null) {
       setSelectedFloor(floor);
       console.log(floor);
-      checkIn(username, floor, note);
-      setLast(username);
+      let result = await checkIn(username, floor, note);
+      if (!("errormsg" in result)){
+        setLast(username);
+      }
+      else{
+        setSelectedFloor(null);
+        setNote("User already checked in on another machine. Try again with a different username.");
+      }
+    }
+    else{
+      setNote('Click your currently selected floor first to check out and check into a different floor.');
     }
 
     getData();
@@ -39,6 +47,7 @@ const LibraryOccupancyTracker: React.FC = () => {
     const response = await fetch("http://localhost:8000/checkin", {method: "POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify(checkInData)});
     const msg = await response.json();
     console.log("response from api: ", msg);
+    return msg;
   }
   const checkOut = async (userName: string) => {
     const checkOutData = {user: userName}
@@ -82,15 +91,15 @@ const LibraryOccupancyTracker: React.FC = () => {
 
       <div style={{ marginTop: '20px' }}>
         <label>
-          Username:
-          <input type="text" value={username} onChange={(e) => changeUser(e.target.value)} />
+          Username: 
+          <input type="text" id="user" value={username} onChange={(e) => changeUser(e.target.value)} />
         </label>
       </div>
 
       <div style={{ marginTop: '10px' }}>
         <label>
-          Note:
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} />
+          Note: 
+          <textarea value={note} id="note" onChange={(e) => setNote(e.target.value)} />
           <h1>{note}</h1>
         </label>
       </div>
