@@ -27,3 +27,7 @@ services:
     build: ./webserver
     ports:
       - "80:80"
+
+  init:
+    container_name: init
+    build: ./init

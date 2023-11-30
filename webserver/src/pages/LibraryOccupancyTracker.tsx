@@ -1,56 +1,53 @@
-import React, { useState } from 'react';
-import {redirect, useNavigate} from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
 
-interface LibraryProps{
-  user: string;
-}
-
-const LibraryOccupancyTracker: React.FC<LibraryProps> = ({user}) => {
+const LibraryOccupancyTracker: React.FC = () => {
 
   const [username, setUsername] = useState<string>('');
+  const [lastUser, setLast] = useState<string>('');
   const [note, setNote] = useState<string>('');
   const [selectedFloor, setSelectedFloor] = useState<number | null>(null);
-  let navigate = useNavigate();
   // Create an object to store the occupancy information for each floor
-  const [occupancyData, setOccupancyData] = useState<{ [key: number]: number }>({
-    1: 0, // Initialize occupancy for each floor to 0
-    2: 0,
-    3: 0,
-    4: 0,
-    5: 0,
-    6: 0,
-    7: 0,
-    8: 0,
+  const [occupancyData, setOccupancyData] = useState<Array<number>>([0, 0, 0, 0, 0, 0, 0, 0]);
+  useEffect(() => {
+    getData();
+    const textBox = document.getElementById("note");
+    const userBox = document.getElementById("user");
+    textBox?.setAttribute("wrap", "off");
+    userBox?.setAttribute("wrap", "off");
   });
-
-  const handleFloorClick = (floor: number) => {
+  const handleFloorClick = async (floor: number) => {
     if (selectedFloor === floor) {
       setSelectedFloor(null);
-      // setOccupancyData(prevOccupancyData => {
-      //   const newData = [...prevOccupancyData];
-      //   newData[floor - 1] = Math.max(newData[floor - 1] - 1, 0);
-      //   return newData;
-      // });
-    } else {
+      checkOut(lastUser);
+    }
+    else if (selectedFloor === null) {
       setSelectedFloor(floor);
       console.log(floor);
-      checkIn(username, floor, note);
-      // setOccupancyData(prevOccupancyData => {
-      //   const newData = [...prevOccupancyData];
-      //   newData[floor - 1] += 1;
-      //   if (selectedFloor !== null) {
-      //     newData[selectedFloor - 1] = Math.max(newData[selectedFloor - 1] - 1, 0);
-      //   }
-      //   return newData;
-      // });
+      let result = await checkIn(username, floor, note);
+      if (!("errormsg" in result)){
+        setLast(username);
+      }
+      else{
+        setSelectedFloor(null);
+        setNote("User already checked in on another machine. Try again with a different username.");
+      }
     }
-  };
+    else{
+      setNote('Click your currently selected floor first to check out and check into a different floor.');
+    }
 
+    getData();
+    console.log(occupancyData);
+  };
+  const changeUser = (userName: string) => {
+    setUsername(userName);
+  }
   const checkIn = async (userName: string, floorNumber: number | null, noteWritten: string) => {
-    const checkInData = {user: userName, floor: floorNumber, noteWritten: note};
+    const checkInData = {user: userName, floor: floorNumber, note: noteWritten};
     const response = await fetch("http://localhost:8000/checkin", {method: "POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify(checkInData)});
     const msg = await response.json();
     console.log("response from api: ", msg);
+    return msg;
   }
   const checkOut = async (userName: string) => {
     const checkOutData = {user: userName}
@@ -58,14 +55,21 @@ const LibraryOccupancyTracker: React.FC<LibraryProps> = ({user}) => {
     const msg = await response.json();
     console.log("response from api: ", msg);
     };
-    const getData = async () => {
-      const response = await fetch("http://localhost:8000/view", {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json', 
-        }})
-    };
-  
+  const getData = async () => {
+    const response = await fetch("http://localhost:8000/counts", {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json', 
+      }});
+      const data = await response.json();
+      // const occupancy = [...occupancyData];
+      // for(let i = 0; i < data.length; i++){
+      //   occupancy[i] = occupancy[i]+1;
+      //   // Update the state with the new array
+      // }
+      console.log("data received: ", data);
+      setOccupancyData(data["counts"]);
+  };
     return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
       <h1>Welcome, Please Select What Floor of Davis You'll Be At</h1>
@@ -87,15 +91,15 @@ const LibraryOccupancyTracker: React.FC<LibraryProps> = ({user}) => {
 
       <div style={{ marginTop: '20px' }}>
         <label>
-          Username:
-          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+          Username: 
+          <input type="text" id="user" value={username} onChange={(e) => changeUser(e.target.value)} />
         </label>
       </div>
 
       <div style={{ marginTop: '10px' }}>
         <label>
-          Note:
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} />
+          Note: 
+          <textarea value={note} id="note" onChange={(e) => setNote(e.target.value)} />
           <h1>{note}</h1>
         </label>
       </div>
