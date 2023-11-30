@@ -1,6 +1,7 @@
 import random
 import time
 import json
+import sys
 
 from flask import Flask, request, redirect, url_for, jsonify
 from flask_cors import CORS, cross_origin
@@ -11,8 +12,9 @@ from os import environ as env
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
-
-davis = DB(host='sql', password="ASS42069")
+davis = DB(host="sql", password="ASS42069")
+if len(sys.argv) == 2:
+    davis.host = sys.argv[1]
 
 @app.route("/init", methods=["GET"])
 def init():
@@ -57,9 +59,9 @@ def checkout():
 def view():
     try:
         users = davis.floor_count()
-        return {"counts": users}
+        return users
     except BaseException as e:
-        return {"errormsg": e}
+        return {"errormsg": davis.floor_count()}
 
 @app.route("/view/floor/<int:floor>")
 def floorview(floor: int):

@@ -45,7 +45,7 @@ class DavisDB(DBBase):
     def init(self):
         self.cnx = self.connect()
         if(type(self.cnx) == str):
-            raise mysql.connector.Error(self.cnx)
+            raise mysql.connector.Error(self.host)
         with self.cnx.cursor() as cursor:
             cursor.execute(drop_db)
             cursor.execute(create_db)
