@@ -56,7 +56,7 @@ const LibraryOccupancyTracker: React.FC = () => {
     console.log("response from api: ", msg);
     };
   const getData = async () => {
-    const response = await fetch("http://localhost:8000/view", {
+    const response = await fetch("http://localhost:8000/counts", {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json', 

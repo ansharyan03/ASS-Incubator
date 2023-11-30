@@ -55,14 +55,22 @@ def checkout():
             return {"msg": "user dropped"}
         return {"errormsg": "user could not be dropped. try again."}
 
-@app.route("/view", methods=["GET"])
-def view():
+@app.route("/counts", methods=["GET"])
+def counts():
     try:
         users = davis.floor_count()
         return {"counts": users}
     except BaseException as e:
-        return {"errormsg": davis.floor_count()}
+        return {"errormsg": e}
 
+@app.route("/view", methods=["GET"])
+def view():
+    try:
+        users = davis.view()
+        return users
+    except BaseException as e:
+        return {"errormsg": e}
+    
 @app.route("/view/floor/<int:floor>")
 def floorview(floor: int):
     try:
